@@ -112,7 +112,7 @@ export function SocialProof() {
              <div className="relative bg-black border border-white/5 p-10 rounded-3xl">
                 <Quote className="w-12 h-12 text-gold/20 mb-6" />
                 <p className="text-xl text-white/80 italic leading-relaxed mb-8">
-                  "We position your product and convert attention into real sales. Career Build Studio transformed my professional presence in just weeks."
+                  "They position your product and convert attention into real sales. Career Build Studio transformed my professional presence in just weeks."
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-gold/20 rounded-full flex items-center justify-center font-bold text-gold">A</div>
