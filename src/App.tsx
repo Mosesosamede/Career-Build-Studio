@@ -1,11 +1,12 @@
 import { Navbar, Hero, HowItWorks } from "./components/MainSections";
-import { Pricing, SocialProof, Footer } from "./components/ExtraSections";
+import { Pricing, SocialProof, Footer, FloatingCatButton } from "./components/ExtraSections";
 import { AboutPage } from "./components/AboutPage";
+import { ContactPage } from "./components/ContactPage";
 import { motion, useScroll, useSpring } from "motion/react";
 import { useState, useEffect } from "react";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<"home" | "about">("home");
+  const [currentPage, setCurrentPage] = useState<"home" | "about" | "contact">("home");
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -18,18 +19,10 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  return (
-    <div className="min-h-screen bg-black selection:bg-gold selection:text-black">
-      {/* Progress Bar */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gold z-[100] origin-left"
-        style={{ scaleX }}
-      />
-
-      <Navbar onNavigate={setCurrentPage} currentPage={currentPage} />
-      
-      <main>
-        {currentPage === "home" ? (
+  const renderContent = () => {
+    switch (currentPage) {
+      case "home":
+        return (
           <>
             <Hero />
             
@@ -66,18 +59,39 @@ export default function App() {
                   <p className="text-xl text-white/60 mb-12 max-w-2xl mx-auto">
                     Stop leaving your growth to chance. Join Career Build Studio and start your journey to market domination today.
                   </p>
-                  <button className="bg-gold hover:bg-gold-light text-black px-12 py-6 rounded-full font-bold text-xl transition-all transform hover:scale-105 shadow-[0_0_40px_rgba(212,175,55,0.3)]">
+                  <button 
+                    onClick={() => setCurrentPage("contact")}
+                    className="bg-gold hover:bg-gold-light text-black px-12 py-6 rounded-full font-bold text-xl transition-all transform hover:scale-105 shadow-[0_0_40px_rgba(212,175,55,0.3)]"
+                  >
                     Get Customers Now
                   </button>
                 </div>
               </div>
             </section>
           </>
-        ) : (
-          <AboutPage />
-        )}
+        );
+      case "about":
+        return <AboutPage />;
+      case "contact":
+        return <ContactPage />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-black selection:bg-gold selection:text-black">
+      {/* Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gold z-[100] origin-left"
+        style={{ scaleX }}
+      />
+
+      <Navbar onNavigate={setCurrentPage} currentPage={currentPage} />
+      
+      <main>
+        {renderContent()}
       </main>
 
+      <FloatingCatButton />
       <Footer onNavigate={setCurrentPage} />
     </div>
   );

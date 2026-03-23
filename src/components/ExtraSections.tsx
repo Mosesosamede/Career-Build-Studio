@@ -1,6 +1,48 @@
 import { motion, AnimatePresence } from "motion/react";
-import { Check, X, Star, Quote } from "lucide-react";
+import { Check, X, Star, Quote, Cat } from "lucide-react";
 import { useEffect, useState } from "react";
+
+export function FloatingCatButton() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: -100, opacity: 0 }}
+          className="fixed left-6 bottom-24 z-50 flex items-center gap-4 group cursor-pointer"
+        >
+          {/* Speech Bubble */}
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 1, type: "spring", stiffness: 200 }}
+            className="relative bg-gold text-black px-4 py-2 rounded-2xl font-bold text-sm shadow-[0_0_20px_rgba(212,175,55,0.4)] whitespace-nowrap"
+          >
+            Fix My Visibility
+            {/* Triangle for bubble */}
+            <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[8px] border-l-gold" />
+          </motion.div>
+
+          {/* Cat Button */}
+          <motion.div
+            whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
+            className="w-16 h-16 bg-zinc-900 border-2 border-gold rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.2)] group-hover:shadow-[0_0_40px_rgba(212,175,55,0.4)] transition-all"
+          >
+            <Cat className="w-8 h-8 text-gold" />
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 export function Pricing() {
   const plans = [
@@ -85,9 +127,9 @@ export function Pricing() {
 
 export function SocialProof() {
   const stats = [
-    { label: "Brands Scaled", value: "+300" },
-    { label: "Customers Generated", value: "+20k" },
-    { label: "Revenue Generated", value: "+$10M" }
+    { label: "System design", value: "+12" },
+    { label: "Revenue Spike", value: "70%+" },
+    { label: "Growth Rate", value: "3x" }
   ];
 
   return (
@@ -112,7 +154,7 @@ export function SocialProof() {
              <div className="relative bg-black border border-white/5 p-10 rounded-3xl">
                 <Quote className="w-12 h-12 text-gold/20 mb-6" />
                 <p className="text-xl text-white/80 italic leading-relaxed mb-8">
-                  "They position your product and convert attention into real sales. Career Build Studio transformed my professional presence in just weeks."
+                  "They position your product and convert attention into real sales. Career Build Studio transformed my brand presence in just weeks."
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-gold/20 rounded-full flex items-center justify-center font-bold text-gold">A</div>
@@ -199,7 +241,7 @@ export function Popup() {
 
 import { LogoWithText } from "./Logo";
 
-export function Footer({ onNavigate }: { onNavigate: (page: "home" | "about") => void }) {
+export function Footer({ onNavigate }: { onNavigate: (page: "home" | "about" | "contact") => void }) {
   return (
     <footer className="py-20 px-6 border-t border-white/5">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
@@ -209,6 +251,7 @@ export function Footer({ onNavigate }: { onNavigate: (page: "home" | "about") =>
         <div className="flex gap-8 text-sm text-white/40">
           <button onClick={() => onNavigate("home")} className="hover:text-gold transition-colors">Home</button>
           <button onClick={() => onNavigate("about")} className="hover:text-gold transition-colors">About</button>
+          <button onClick={() => onNavigate("contact")} className="hover:text-gold transition-colors">Contact</button>
           <a href="#pricing" className="hover:text-gold transition-colors">Pricing</a>
         </div>
         <div className="text-sm text-white/20">

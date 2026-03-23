@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { ArrowRight, CheckCircle2, Target, TrendingUp, Users, X } from "lucide-react";
 import { LogoWithText } from "./Logo";
 
-export function Navbar({ onNavigate, currentPage }: { onNavigate: (page: "home" | "about") => void, currentPage: "home" | "about" }) {
+export function Navbar({ onNavigate, currentPage }: { onNavigate: (page: "home" | "about" | "contact") => void, currentPage: "home" | "about" | "contact" }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
@@ -22,10 +22,19 @@ export function Navbar({ onNavigate, currentPage }: { onNavigate: (page: "home" 
           >
             About
           </button>
+          <button 
+            onClick={() => onNavigate("contact")} 
+            className={`hover:text-gold transition-colors ${currentPage === "contact" ? "text-gold" : ""}`}
+          >
+            Contact
+          </button>
           <a href="#how-it-works" className="hover:text-gold transition-colors" onClick={(e) => { if(currentPage !== "home") { e.preventDefault(); onNavigate("home"); setTimeout(() => document.getElementById("how-it-works")?.scrollIntoView({behavior: "smooth"}), 100); } }}>How it works</a>
           <a href="#pricing" className="hover:text-gold transition-colors" onClick={(e) => { if(currentPage !== "home") { e.preventDefault(); onNavigate("home"); setTimeout(() => document.getElementById("pricing")?.scrollIntoView({behavior: "smooth"}), 100); } }}>Pricing</a>
         </div>
-        <button className="bg-gold hover:bg-gold-light text-black px-5 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(212,175,55,0.15)]">
+        <button 
+          onClick={() => onNavigate("contact")}
+          className="bg-gold hover:bg-gold-light text-black px-5 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(212,175,55,0.15)]"
+        >
           GET CUSTOMERS NOW
         </button>
       </div>
