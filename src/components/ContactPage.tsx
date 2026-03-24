@@ -35,11 +35,11 @@ export function ContactPage() {
         body: JSON.stringify({
           fullName: formData.name,
           email: formData.email,
-          businessName: formData.businessName,
-          currentGoal: formData.goal,
-          currentState: formData.situation,
+          busines: formData.businessName,
+          goal: formData.goal,
+          state: formData.situation,
           blocker: formData.problem,
-          readyToInvest: formData.investment
+          ready: formData.investment
         }),
       });
 
