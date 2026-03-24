@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Check, X, Star, Quote, Cat } from "lucide-react";
 import { useEffect, useState } from "react";
+import { GrowthQuizPopup } from "./GrowthQuizPopup";
 
 export function FloatingCatButton() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 2000);
@@ -11,36 +13,48 @@ export function FloatingCatButton() {
   }, []);
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -100, opacity: 0 }}
-          className="fixed left-6 bottom-24 z-50 flex items-center gap-4 group cursor-pointer"
-        >
-          {/* Speech Bubble */}
+    <>
+      <AnimatePresence>
+        {isVisible && (
           <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 1, type: "spring", stiffness: 200 }}
-            className="relative bg-gold text-black px-4 py-2 rounded-2xl font-bold text-sm shadow-[0_0_20px_rgba(212,175,55,0.4)] whitespace-nowrap"
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -100, opacity: 0 }}
+            onClick={() => setIsQuizOpen(true)}
+            className="fixed left-6 bottom-24 z-50 flex items-center gap-4 group cursor-pointer"
           >
-            Fix My Visibility
-            {/* Triangle for bubble */}
-            <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[8px] border-l-gold" />
-          </motion.div>
+            {/* Speech Bubble */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 1, type: "spring", stiffness: 200 }}
+              className="relative bg-gold text-black px-4 py-2 rounded-2xl font-bold text-sm shadow-[0_0_20px_rgba(212,175,55,0.4)] whitespace-nowrap"
+            >
+              Fix My Visibility
+              {/* Triangle for bubble */}
+              <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[8px] border-l-gold" />
+            </motion.div>
 
-          {/* Cat Button */}
-          <motion.div
-            whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
-            className="w-16 h-16 bg-zinc-900 border-2 border-gold rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.2)] group-hover:shadow-[0_0_40px_rgba(212,175,55,0.4)] transition-all"
-          >
-            <Cat className="w-8 h-8 text-gold" />
+            {/* Cat Button */}
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ 
+                duration: 1, 
+                repeat: Infinity, 
+                repeatDelay: 4,
+                ease: "easeInOut"
+              }}
+              whileHover={{ scale: 1.1 }}
+              className="w-16 h-16 bg-zinc-900 border-2 border-gold rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.2)] group-hover:shadow-[0_0_40px_rgba(212,175,55,0.4)] transition-all"
+            >
+              <Cat className="w-8 h-8 text-gold" />
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+
+      <GrowthQuizPopup isOpen={isQuizOpen} onClose={() => setIsQuizOpen(false)} />
+    </>
   );
 }
 
@@ -48,7 +62,7 @@ export function Pricing() {
   const plans = [
     {
       name: "STARTER",
-      price: "₦20,000",
+      price: "₦25,000",
       features: ["Short benefit bullets", "Wrong audience", "No conversion system", "Pull System attention"],
       notIncluded: ["Full growth system", "Personalized coaching"],
       buttonText: "CTA Now",
@@ -83,11 +97,11 @@ export function Pricing() {
           {plans.map((plan, i) => (
             <motion.div 
               key={i}
-              whileHover={{ y: -10 }}
-              className={`p-10 rounded-3xl border transition-all flex flex-col ${
+              whileHover={{ y: -12, scale: 1.01 }}
+              className={`p-10 rounded-3xl border transition-all flex flex-col group ${
                 plan.highlighted 
-                ? "bg-zinc-900 border-gold shadow-[0_0_30px_rgba(212,175,55,0.1)]" 
-                : "bg-black border-white/5 hover:border-white/20"
+                ? "bg-zinc-900 border-gold shadow-[0_0_30px_rgba(212,175,55,0.1)] hover:shadow-[0_20px_60px_rgba(212,175,55,0.25)]" 
+                : "bg-black border-white/5 hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-[0_20px_60px_rgba(255,255,255,0.05)]"
               }`}
             >
               <div className="mb-8">
@@ -241,7 +255,7 @@ export function Popup() {
 
 import { LogoWithText } from "./Logo";
 
-export function Footer({ onNavigate }: { onNavigate: (page: "home" | "about" | "contact") => void }) {
+export function Footer({ onNavigate }: { onNavigate: (page: "home" | "about" | "contact" | "how-it-works") => void }) {
   return (
     <footer className="py-20 px-6 border-t border-white/5">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
@@ -251,6 +265,7 @@ export function Footer({ onNavigate }: { onNavigate: (page: "home" | "about" | "
         <div className="flex gap-8 text-sm text-white/40">
           <button onClick={() => onNavigate("home")} className="hover:text-gold transition-colors">Home</button>
           <button onClick={() => onNavigate("about")} className="hover:text-gold transition-colors">About</button>
+          <button onClick={() => onNavigate("how-it-works")} className="hover:text-gold transition-colors">How it works</button>
           <button onClick={() => onNavigate("contact")} className="hover:text-gold transition-colors">Contact</button>
           <a href="#pricing" className="hover:text-gold transition-colors">Pricing</a>
         </div>

@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { ArrowRight, CheckCircle2, Target, TrendingUp, Users, X } from "lucide-react";
 import { LogoWithText } from "./Logo";
 
-export function Navbar({ onNavigate, currentPage }: { onNavigate: (page: "home" | "about" | "contact") => void, currentPage: "home" | "about" | "contact" }) {
+export function Navbar({ onNavigate, currentPage }: { onNavigate: (page: "home" | "about" | "contact" | "how-it-works") => void, currentPage: "home" | "about" | "contact" | "how-it-works" }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
@@ -23,12 +23,17 @@ export function Navbar({ onNavigate, currentPage }: { onNavigate: (page: "home" 
             About
           </button>
           <button 
+            onClick={() => onNavigate("how-it-works")} 
+            className={`hover:text-gold transition-colors ${currentPage === "how-it-works" ? "text-gold" : ""}`}
+          >
+            How it works
+          </button>
+          <button 
             onClick={() => onNavigate("contact")} 
             className={`hover:text-gold transition-colors ${currentPage === "contact" ? "text-gold" : ""}`}
           >
             Contact
           </button>
-          <a href="#how-it-works" className="hover:text-gold transition-colors" onClick={(e) => { if(currentPage !== "home") { e.preventDefault(); onNavigate("home"); setTimeout(() => document.getElementById("how-it-works")?.scrollIntoView({behavior: "smooth"}), 100); } }}>How it works</a>
           <a href="#pricing" className="hover:text-gold transition-colors" onClick={(e) => { if(currentPage !== "home") { e.preventDefault(); onNavigate("home"); setTimeout(() => document.getElementById("pricing")?.scrollIntoView({behavior: "smooth"}), 100); } }}>Pricing</a>
         </div>
         <button 
@@ -42,7 +47,7 @@ export function Navbar({ onNavigate, currentPage }: { onNavigate: (page: "home" 
   );
 }
 
-export function Hero() {
+export function Hero({ onNavigate }: { onNavigate: (page: "home" | "about" | "contact" | "how-it-works") => void }) {
   return (
     <section className="pt-40 pb-20 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
@@ -58,11 +63,17 @@ export function Hero() {
             We help brands and agencies turn visibility into demand and demand into paying customers.
           </p>
           <div className="flex flex-wrap gap-4">
-            <button className="bg-gold hover:bg-gold-light text-black px-8 py-4 rounded-full font-bold transition-all flex items-center gap-2 group shadow-[0_0_25px_rgba(212,175,55,0.2)]">
+            <button 
+              onClick={() => onNavigate("contact")}
+              className="bg-gold hover:bg-gold-light text-black px-8 py-4 rounded-full font-bold transition-all flex items-center gap-2 group shadow-[0_0_25px_rgba(212,175,55,0.2)]"
+            >
               Get Customers Now
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="bg-black text-white border border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.1),inset_0_0_12px_rgba(255,255,255,0.1)] hover:border-white hover:shadow-[0_0_25px_rgba(255,255,255,0.4),inset_0_0_15px_rgba(255,255,255,0.25)] px-8 py-4 rounded-full font-bold transition-all">
+            <button 
+              onClick={() => onNavigate("how-it-works")}
+              className="bg-black text-white border border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.1),inset_0_0_12px_rgba(255,255,255,0.1)] hover:border-white hover:shadow-[0_0_25px_rgba(255,255,255,0.4),inset_0_0_15px_rgba(255,255,255,0.25)] px-8 py-4 rounded-full font-bold transition-all"
+            >
               See How It Works
             </button>
           </div>

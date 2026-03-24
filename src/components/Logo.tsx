@@ -3,6 +3,13 @@ import { motion } from "motion/react";
 export function Logo({ className = "w-10 h-10" }: { className?: string }) {
   return (
     <motion.div 
+      animate={{ rotate: [0, 360] }}
+      transition={{ 
+        duration: 1, 
+        repeat: Infinity, 
+        repeatDelay: 4,
+        ease: "easeInOut"
+      }}
       whileHover={{ scale: 1.05 }}
       className={`relative flex items-center justify-center ${className}`}
     >

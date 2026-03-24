@@ -2,11 +2,12 @@ import { Navbar, Hero, HowItWorks } from "./components/MainSections";
 import { Pricing, SocialProof, Footer, FloatingCatButton } from "./components/ExtraSections";
 import { AboutPage } from "./components/AboutPage";
 import { ContactPage } from "./components/ContactPage";
+import { HowItWorksPage } from "./components/HowItWorksPage";
 import { motion, useScroll, useSpring } from "motion/react";
 import { useState, useEffect } from "react";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<"home" | "about" | "contact">("home");
+  const [currentPage, setCurrentPage] = useState<"home" | "about" | "contact" | "how-it-works">("home");
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -24,7 +25,7 @@ export default function App() {
       case "home":
         return (
           <>
-            <Hero />
+            <Hero onNavigate={setCurrentPage} />
             
             {/* Floating Proof */}
             <div className="py-12 border-y border-white/5 bg-zinc-950/50 overflow-hidden whitespace-nowrap">
@@ -74,6 +75,8 @@ export default function App() {
         return <AboutPage />;
       case "contact":
         return <ContactPage />;
+      case "how-it-works":
+        return <HowItWorksPage onNavigate={setCurrentPage} />;
     }
   };
 
