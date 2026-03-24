@@ -59,6 +59,7 @@ export function FloatingCatButton() {
 }
 
 export function Pricing() {
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
   const plans = [
     {
       name: "Starter — Launch (Pay-As-You-Go)",
@@ -156,7 +157,9 @@ export function Pricing() {
                   </div>
                 ))}
               </div>
-              <button className={`w-full py-4 px-4 rounded-full font-bold text-sm transition-all ${
+              <button 
+                onClick={() => setIsQuizOpen(true)}
+                className={`w-full py-4 px-4 rounded-full font-bold text-sm transition-all ${
                 plan.highlighted 
                 ? "bg-gold text-black hover:bg-gold-light shadow-[0_0_20px_rgba(212,175,55,0.3)]" 
                 : "bg-black text-white border border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.1),inset_0_0_12px_rgba(255,255,255,0.1)] hover:border-white hover:shadow-[0_0_25px_rgba(255,255,255,0.4),inset_0_0_15px_rgba(255,255,255,0.25)]"
@@ -167,6 +170,14 @@ export function Pricing() {
           ))}
         </div>
       </div>
+      <GrowthQuizPopup 
+        isOpen={isQuizOpen} 
+        onClose={() => setIsQuizOpen(false)} 
+        title="Initialize Growth"
+        description="Step"
+        resultTitle="Your Growth Strategy"
+        resultDescription="We've analyzed your needs. Here are the best plans to scale your business."
+      />
     </section>
   );
 }
@@ -222,66 +233,82 @@ export function SocialProof() {
 
 export function Popup() {
   const [show, setShow] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShow(true), 900);
     return () => clearTimeout(timer);
   }, []);
 
-  if (!show) return null;
+  if (!show && !isQuizOpen) return null;
 
   return (
-    <AnimatePresence>
-      {show && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => setShow(false)}
-          />
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative bg-zinc-900 border border-gold/30 p-10 rounded-[2.5rem] max-w-lg w-full shadow-2xl overflow-hidden"
-          >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gold" />
-            <button 
+    <>
+      <AnimatePresence>
+        {show && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
               onClick={() => setShow(false)}
-              className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative bg-zinc-900 border border-gold/30 p-10 rounded-[2.5rem] max-w-lg w-full shadow-2xl overflow-hidden"
             >
-              <X className="w-6 h-6" />
-            </button>
-            
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 text-gold text-xs font-bold mb-6">
-                <span className="w-2 h-2 rounded-full bg-gold animate-ping" />
-                STEP 1: INITIALIZE GROWTH
+              <div className="absolute top-0 left-0 w-full h-1 bg-gold" />
+              <button 
+                onClick={() => setShow(false)}
+                className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 text-gold text-xs font-bold mb-6">
+                  <span className="w-2 h-2 rounded-full bg-gold animate-ping" />
+                  STEP 1: INITIALIZE GROWTH
+                </div>
+                <h2 className="text-4xl font-bold mb-6 leading-tight">
+                  WAIT, BEFORE YOU LEAVE...
+                </h2>
+                <p className="text-white/60 mb-10 leading-relaxed">
+                  Unlock your product's potential with our exclusive growth system. Join 300+ brands that scaled their revenue this year.
+                </p>
+                <div className="space-y-4">
+                  <button 
+                    onClick={() => {
+                      setShow(false);
+                      setIsQuizOpen(true);
+                    }}
+                    className="w-full bg-gold hover:bg-gold-light text-black py-5 rounded-full font-bold text-lg transition-all transform hover:scale-[1.02] shadow-[0_0_25px_rgba(212,175,55,0.2)]"
+                  >
+                    Get My Free Growth Audit
+                  </button>
+                  <button 
+                    onClick={() => setShow(false)}
+                    className="w-full text-white/40 hover:text-white text-sm font-medium transition-colors"
+                  >
+                    No thanks, I'll figure it out myself
+                  </button>
+                </div>
               </div>
-              <h2 className="text-4xl font-bold mb-6 leading-tight">
-                WAIT, BEFORE YOU LEAVE...
-              </h2>
-              <p className="text-white/60 mb-10 leading-relaxed">
-                Unlock your product's potential with our exclusive growth system. Join 300+ brands that scaled their revenue this year.
-              </p>
-              <div className="space-y-4">
-                <button className="w-full bg-gold hover:bg-gold-light text-black py-5 rounded-full font-bold text-lg transition-all transform hover:scale-[1.02] shadow-[0_0_25px_rgba(212,175,55,0.2)]">
-                  Get My Free Growth Audit
-                </button>
-                <button 
-                  onClick={() => setShow(false)}
-                  className="w-full text-white/40 hover:text-white text-sm font-medium transition-colors"
-                >
-                  No thanks, I'll figure it out myself
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <GrowthQuizPopup 
+        isOpen={isQuizOpen} 
+        onClose={() => setIsQuizOpen(false)} 
+        title="Growth Audit"
+        description="Section"
+      />
+    </>
   );
 }
 

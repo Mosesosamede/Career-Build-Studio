@@ -30,16 +30,47 @@ export default function App() {
             {/* Floating Proof */}
             <div className="py-12 border-y border-white/5 bg-zinc-950/50 overflow-hidden whitespace-nowrap">
               <motion.div 
-                animate={{ x: [0, -1000] }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="flex gap-12 items-center text-sm font-bold tracking-widest text-white/20 uppercase"
+                animate={{ x: [0, -2000] }}
+                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                className="flex gap-12 items-center text-sm font-bold tracking-widest text-white uppercase drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]"
               >
-                {[...Array(10)].map((_, i) => (
-                  <span key={i} className="flex items-center gap-4">
-                    <span className="w-2 h-2 rounded-full bg-gold" />
-                    A fashion brand just joined Growth Plan
-                    <span className="w-2 h-2 rounded-full bg-gold" />
-                    Skincare store gained 120 customers
+                {[
+                  "A fashion brand just joined Starter Plan",
+                  "Skincare store gained 120 customers",
+                  "Tech agency upgraded to Full Scale",
+                  "Local bakery reached 5k new leads",
+                  "E-commerce store joined Growth Plan",
+                  "Fitness coach gained 50 new signups",
+                  "Jewelry brand just joined Starter Plan",
+                  "Real estate firm joined Full Scale",
+                  "Beauty salon gained 80 new bookings",
+                  "Gadget store joined Growth Plan"
+                ].map((text, i) => (
+                  <span key={i} className="flex items-center gap-12">
+                    <span className="flex items-center gap-4">
+                      <span className="w-2 h-2 rounded-full bg-gold shadow-[0_0_10px_rgba(212,175,55,0.8)]" />
+                      {text}
+                    </span>
+                  </span>
+                ))}
+                {/* Duplicate for seamless loop */}
+                {[
+                  "A fashion brand just joined Starter Plan",
+                  "Skincare store gained 120 customers",
+                  "Tech agency upgraded to Full Scale",
+                  "Local bakery reached 5k new leads",
+                  "E-commerce store joined Growth Plan",
+                  "Fitness coach gained 50 new signups",
+                  "Jewelry brand just joined Starter Plan",
+                  "Real estate firm joined Full Scale",
+                  "Beauty salon gained 80 new bookings",
+                  "Gadget store joined Growth Plan"
+                ].map((text, i) => (
+                  <span key={`dup-${i}`} className="flex items-center gap-12">
+                    <span className="flex items-center gap-4">
+                      <span className="w-2 h-2 rounded-full bg-gold shadow-[0_0_10px_rgba(212,175,55,0.8)]" />
+                      {text}
+                    </span>
                   </span>
                 ))}
               </motion.div>

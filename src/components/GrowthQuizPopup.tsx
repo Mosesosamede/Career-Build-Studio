@@ -79,7 +79,21 @@ const PLANS = [
   }
 ];
 
-export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function GrowthQuizPopup({ 
+  isOpen, 
+  onClose,
+  title = "Growth Audit",
+  description = "Section",
+  resultTitle = "Your Custom Growth Plan",
+  resultDescription = "Based on your audit, we recommend these solutions."
+}: { 
+  isOpen: boolean; 
+  onClose: () => void;
+  title?: string;
+  description?: string;
+  resultTitle?: string;
+  resultDescription?: string;
+}) {
   const [step, setStep] = useState(1);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(0);
@@ -232,10 +246,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
               <div>
                 <div className="flex items-center gap-2 text-gold text-xs font-bold tracking-widest uppercase mb-1">
                   <Sparkles className="w-3 h-3" />
-                  Growth Audit
+                  {title}
                 </div>
                 <div className="text-white/40 text-[10px] uppercase tracking-tighter">
-                  Section {step} of {totalSteps}
+                  {description} {step} of {totalSteps}
                 </div>
               </div>
               <button 
@@ -325,8 +339,8 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                     {!isCheckingOut ? (
                       <>
                         <div className="text-center space-y-2">
-                          <h3 className="text-3xl font-bold text-white">Your Custom Growth Plan</h3>
-                          <p className="text-white/40">Based on your audit, we recommend these solutions.</p>
+                          <h3 className="text-3xl font-bold text-white">{resultTitle}</h3>
+                          <p className="text-white/40">{resultDescription}</p>
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-6">
