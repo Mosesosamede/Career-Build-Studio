@@ -70,7 +70,8 @@ export function Pricing() {
         "Get discovered on Google",
         "Simple checkout for fast purchases",
         "Guided content plan for posting",
-        "Generate your first 20 potential customers"
+        "Generate your first 20 potential customers",
+        "Tailored Strategy"
       ],
       promise: "Turn your product into something people notice and buy",
       buttonText: "Start Pay-As-You-Go — ₦5,000 today",
@@ -87,7 +88,8 @@ export function Pricing() {
         "Optimized checkout for instant purchases",
         "Product repositioning that attracts buyers",
         "Offer structured to convert attention",
-        "Get discovered on Google"
+        "Get discovered on Google",
+        "Tailored Strategy"
       ],
       promise: "Get consistent traffic and convert it into paying customers",
       buttonText: "Start Getting Customers",
@@ -104,7 +106,8 @@ export function Pricing() {
         "Full funnel optimization (click → payment)",
         "Tailored growth strategy",
         "Ongoing performance improvement",
-        "Full brand and offer overhaul"
+        "Full brand and offer overhaul",
+        "Tailored Strategy"
       ],
       promise: "Turn your business into a daily sales machine",
       buttonText: "Build My Revenue Engine",
