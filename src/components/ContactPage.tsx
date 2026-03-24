@@ -26,7 +26,7 @@ export function ContactPage() {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("http://localhost:3000/api/contact", {
         method: "POST",
         cache: "no-cache",
         headers: {
