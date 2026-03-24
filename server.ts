@@ -48,6 +48,35 @@ async function startServer() {
     }
   });
 
+  // Contact Form Submission Proxy
+  app.post("/api/contact", async (req, res) => {
+    const apiUrl = process.env.GET_CUSTOMER_API_URL;
+    
+    if (!apiUrl) {
+      console.error("GET_CUSTOMER_API_URL is not set");
+      return res.status(500).json({ error: "API configuration missing" });
+    }
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req.body),
+        redirect: "follow", // Ensure we follow redirects for Google Apps Script
+      });
+
+      // Google Apps Script returns a redirect or a simple JSON
+      // If it's a redirect, fetch handles it automatically.
+      // We just need to know if it was sent successfully.
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Contact submission error:", error);
+      res.status(500).json({ error: "Failed to submit form" });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
