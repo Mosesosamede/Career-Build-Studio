@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
-import { X, ChevronRight, ChevronLeft, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { X, ChevronRight, ChevronLeft, Sparkles, Check, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface QuizData {
   brandName: string;
@@ -17,6 +17,8 @@ interface QuizData {
 
 export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [step, setStep] = useState(1);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisStep, setAnalysisStep] = useState(0);
   const [data, setData] = useState<QuizData>({
     brandName: "",
     industry: "",
@@ -32,15 +34,69 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
 
   const totalSteps = 7;
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, totalSteps + 1));
+  const isStepValid = () => {
+    switch (step) {
+      case 1:
+        return data.brandName.trim() !== "" && data.industry !== "";
+      case 2:
+        return data.recentCustomers !== "";
+      case 3:
+        return data.efforts.trim() !== "";
+      case 4:
+        return data.conversionReality !== "";
+      case 5:
+        return data.desiredCustomers !== "" && data.mainGoal !== "";
+      case 6:
+        return data.stoppingFactor.trim() !== "";
+      case 7:
+        return data.urgency !== "";
+      default:
+        return true;
+    }
+  };
+
+  const nextStep = () => {
+    if (isStepValid()) {
+      setStep((s) => Math.min(s + 1, totalSteps + 1));
+    }
+  };
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
   const handleFinish = () => {
-    // In a real app, we'd send this data to a server
-    console.log("Quiz Data:", data);
-    onClose();
-    setStep(1);
+    if (isStepValid()) {
+      setIsAnalyzing(true);
+    }
   };
+
+  useEffect(() => {
+    if (isAnalyzing) {
+      const timer1 = setTimeout(() => setAnalysisStep(1), 1500);
+      const timer2 = setTimeout(() => setAnalysisStep(2), 3000);
+      const timer3 = setTimeout(() => setAnalysisStep(3), 4500);
+      const timer4 = setTimeout(() => {
+        onClose();
+        // Reset state for next time
+        setTimeout(() => {
+          setIsAnalyzing(false);
+          setAnalysisStep(0);
+          setStep(1);
+        }, 500);
+        
+        // Scroll to pricing
+        const pricingSection = document.getElementById('pricing');
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 6000);
+
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        clearTimeout(timer3);
+        clearTimeout(timer4);
+      };
+    }
+  }, [isAnalyzing, onClose]);
 
   if (!isOpen) return null;
 
@@ -93,13 +149,71 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
             {/* Content */}
             <div className="flex-grow overflow-y-auto p-8 md:p-12">
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={step}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-8"
-                >
+                {isAnalyzing ? (
+                  <motion.div
+                    key="analyzing"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="py-12 flex flex-col items-center justify-center"
+                  >
+                    <div className="relative space-y-12">
+                      {/* Vertical Line */}
+                      <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-white/10">
+                        <motion.div 
+                          className="w-full bg-gold origin-top"
+                          initial={{ scaleY: 0 }}
+                          animate={{ scaleY: analysisStep / 3 }}
+                          transition={{ duration: 0.5 }}
+                        />
+                      </div>
+
+                      {/* Steps */}
+                      {[
+                        "Choose packages",
+                        "Payment verified",
+                        "Dashboard monitor"
+                      ].map((text, index) => (
+                        <div key={index} className="flex items-center gap-6 relative z-10">
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
+                            analysisStep > index 
+                            ? "bg-gold border-gold" 
+                            : analysisStep === index 
+                              ? "border-gold animate-pulse" 
+                              : "bg-zinc-950 border-white/20"
+                          }`}>
+                            {analysisStep > index ? (
+                              <Check className="w-3 h-3 text-black font-bold" />
+                            ) : analysisStep === index ? (
+                              <Loader2 className="w-3 h-3 text-gold animate-spin" />
+                            ) : null}
+                          </div>
+                          <span className={`text-lg font-bold tracking-widest uppercase transition-all duration-500 ${
+                            analysisStep >= index ? "text-white" : "text-white/20"
+                          }`}>
+                            {text}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <motion.p 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="mt-16 text-gold text-xs font-bold tracking-[0.3em] uppercase animate-pulse"
+                    >
+                      Finalizing your growth strategy...
+                    </motion.p>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key={step}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-8"
+                  >
                   {step === 1 && (
                     <div className="space-y-6">
                       <div className="space-y-2">
@@ -108,7 +222,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                       </div>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <label className="text-sm font-bold text-gold uppercase tracking-widest">What's your brand name?</label>
+                          <label className="text-sm font-bold text-gold uppercase tracking-widest flex justify-between">
+                            What's your brand name?
+                            <span className="text-[10px] text-white/20">Required</span>
+                          </label>
                           <input 
                             type="text" 
                             value={data.brandName}
@@ -118,7 +235,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-bold text-gold uppercase tracking-widest">What industry are you in?</label>
+                          <label className="text-sm font-bold text-gold uppercase tracking-widest flex justify-between">
+                            What industry are you in?
+                            <span className="text-[10px] text-white/20">Required</span>
+                          </label>
                           <div className="grid grid-cols-2 gap-3">
                             {["Fashion", "Tech", "Real Estate", "E-commerce", "Services", "Other"].map((option) => (
                               <button
@@ -163,7 +283,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                           <div className="text-center text-4xl font-bold text-gold">{data.visibility}</div>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-bold text-gold uppercase tracking-widest">How many customers did you get in the last 7 days?</label>
+                          <label className="text-sm font-bold text-gold uppercase tracking-widest flex justify-between">
+                            How many customers did you get in the last 7 days?
+                            <span className="text-[10px] text-white/20">Required</span>
+                          </label>
                           <div className="grid grid-cols-2 gap-3">
                             {["0", "1-5", "5-10", "10-20", "20+"].map((option) => (
                               <button
@@ -191,7 +314,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                         <p className="text-white/40">What's the current strategy?</p>
                       </div>
                       <div className="space-y-4">
-                        <label className="text-sm font-bold text-gold uppercase tracking-widest">What are you currently doing to get customers?</label>
+                        <label className="text-sm font-bold text-gold uppercase tracking-widest flex justify-between">
+                          What are you currently doing to get customers?
+                          <span className="text-[10px] text-white/20">Required</span>
+                        </label>
                         <textarea 
                           value={data.efforts}
                           onChange={(e) => setData({...data, efforts: e.target.value})}
@@ -210,7 +336,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                         <p className="text-white/40">The clarity test.</p>
                       </div>
                       <div className="space-y-4">
-                        <label className="text-sm font-bold text-gold uppercase tracking-widest">If you explain your business to someone, can they immediately understand and buy?</label>
+                        <label className="text-sm font-bold text-gold uppercase tracking-widest flex justify-between">
+                          If you explain your business to someone, can they immediately understand and buy?
+                          <span className="text-[10px] text-white/20">Required</span>
+                        </label>
                         <div className="grid gap-3">
                           {["Yes", "No", "Not sure"].map((option) => (
                             <button
@@ -238,7 +367,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                       </div>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <label className="text-sm font-bold text-gold uppercase tracking-widest">How many customers do you want per week?</label>
+                          <label className="text-sm font-bold text-gold uppercase tracking-widest flex justify-between">
+                            How many customers do you want per week?
+                            <span className="text-[10px] text-white/20">Required</span>
+                          </label>
                           <div className="grid grid-cols-2 gap-3">
                             {["1-5", "5-20", "20-50", "50-100", "100+"].map((option) => (
                               <button
@@ -256,7 +388,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-bold text-gold uppercase tracking-widest">What is your current main goal right now?</label>
+                          <label className="text-sm font-bold text-gold uppercase tracking-widest flex justify-between">
+                            What is your current main goal right now?
+                            <span className="text-[10px] text-white/20">Required</span>
+                          </label>
                           <div className="grid grid-cols-2 gap-3">
                             {["Scale Revenue", "Increase Visibility", "Launch Product", "Improve Conversion", "Other"].map((option) => (
                               <button
@@ -284,7 +419,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                         <p className="text-white/40">Identifying the bottleneck.</p>
                       </div>
                       <div className="space-y-4">
-                        <label className="text-sm font-bold text-gold uppercase tracking-widest">What do you think is stopping your business from getting more customers?</label>
+                        <label className="text-sm font-bold text-gold uppercase tracking-widest flex justify-between">
+                          What do you think is stopping your business from getting more customers?
+                          <span className="text-[10px] text-white/20">Required</span>
+                        </label>
                         <textarea 
                           value={data.stoppingFactor}
                           onChange={(e) => setData({...data, stoppingFactor: e.target.value})}
@@ -302,7 +440,10 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                         <p className="text-white/40">How fast do we move?</p>
                       </div>
                       <div className="space-y-4">
-                        <label className="text-sm font-bold text-gold uppercase tracking-widest">How urgent is fixing this for you?</label>
+                        <label className="text-sm font-bold text-gold uppercase tracking-widest flex justify-between">
+                          How urgent is fixing this for you?
+                          <span className="text-[10px] text-white/20">Required</span>
+                        </label>
                         <div className="grid gap-3">
                           {["Just exploring", "Need results soon", "Need results immediately"].map((option) => (
                             <button
@@ -322,40 +463,53 @@ export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose:
                     </div>
                   )}
                 </motion.div>
-              </AnimatePresence>
+              )}
+            </AnimatePresence>
             </div>
 
             {/* Footer */}
-            <div className="p-8 border-t border-white/5 bg-zinc-900/50 flex justify-between items-center">
-              <button
-                onClick={prevStep}
-                disabled={step === 1}
-                className={`flex items-center gap-2 text-sm font-bold transition-all ${
-                  step === 1 ? "opacity-0 pointer-events-none" : "text-white/40 hover:text-white"
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Back
-              </button>
+            {!isAnalyzing && (
+              <div className="p-8 border-t border-white/5 bg-zinc-900/50 flex justify-between items-center">
+                <button
+                  onClick={prevStep}
+                  disabled={step === 1}
+                  className={`flex items-center gap-2 text-sm font-bold transition-all ${
+                    step === 1 ? "opacity-0 pointer-events-none" : "text-white/40 hover:text-white"
+                  }`}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Back
+                </button>
 
-              {step < totalSteps ? (
-                <button
-                  onClick={nextStep}
-                  className="bg-gold hover:bg-gold-light text-black px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(212,175,55,0.3)]"
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              ) : (
-                <button
-                  onClick={handleFinish}
-                  className="bg-gold hover:bg-gold-light text-black px-10 py-4 rounded-full font-bold flex items-center gap-2 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(212,175,55,0.4)]"
-                >
-                  Show me my growth plan
-                  <Sparkles className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+                {step < totalSteps ? (
+                  <button
+                    onClick={nextStep}
+                    disabled={!isStepValid()}
+                    className={`px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-all transform ${
+                      isStepValid() 
+                      ? "bg-gold text-black hover:bg-gold-light hover:scale-105 shadow-[0_0_20px_rgba(212,175,55,0.3)]" 
+                      : "bg-white/5 text-white/20 cursor-not-allowed border border-white/10"
+                    }`}
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleFinish}
+                    disabled={!isStepValid()}
+                    className={`px-10 py-4 rounded-full font-bold flex items-center gap-2 transition-all transform ${
+                      isStepValid()
+                      ? "bg-gold text-black hover:bg-gold-light hover:scale-105 shadow-[0_0_30px_rgba(212,175,55,0.4)]"
+                      : "bg-white/5 text-white/20 cursor-not-allowed border border-white/10"
+                    }`}
+                  >
+                    Show me my growth plan
+                    <Sparkles className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            )}
           </motion.div>
         </div>
       )}

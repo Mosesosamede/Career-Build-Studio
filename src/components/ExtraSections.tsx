@@ -61,27 +61,53 @@ export function FloatingCatButton() {
 export function Pricing() {
   const plans = [
     {
-      name: "STARTER",
+      name: "Starter — Launch (Pay-As-You-Go)",
       price: "₦25,000",
-      features: ["Short benefit bullets", "Wrong audience", "No conversion system", "Pull System attention"],
-      notIncluded: ["Full growth system", "Personalized coaching"],
-      buttonText: "CTA Now",
+      subPrice: "5 payments of ₦5,000",
+      features: [
+        "3 product videos to attract attention",
+        "Make your product look premium",
+        "Get discovered on Google",
+        "Simple checkout for fast purchases",
+        "Guided content plan for posting",
+        "Generate your first 20 potential customers"
+      ],
+      promise: "Turn your product into something people notice and buy",
+      buttonText: "Start Pay-As-You-Go — ₦5,000 today",
       highlighted: false
     },
     {
-      name: "GROWTH",
-      price: "₦50,000",
-      features: ["Short benefit bullets", "We push your product", "We build demand", "We convert attention", "Into sales"],
-      notIncluded: [],
-      buttonText: "CTA Now",
+      name: "Growth — Customer Flow ⭐",
+      price: "₦120,000",
+      features: [
+        "Everything in Starter",
+        "10 videos/daily showcasing your product",
+        "Turn visitors into paying customers",
+        "Up to 1,000 targeted daily reach",
+        "Optimized checkout for instant purchases",
+        "Product repositioning that attracts buyers",
+        "Offer structured to convert attention",
+        "Get discovered on Google"
+      ],
+      promise: "Get consistent traffic and convert it into paying customers",
+      buttonText: "Start Getting Customers",
       highlighted: true
     },
     {
-      name: "DOMINATION",
-      price: "₦150,000",
-      features: ["Short benefit bullets", "Wrong audience", "We build demand", "We conversion system", "Full System attention"],
-      notIncluded: [],
-      buttonText: "CTA Now",
+      name: "Full Scale — Revenue Engine",
+      price: "₦350,000",
+      features: [
+        "Everything in Growth",
+        "AI-powered creators showcasing daily",
+        "We handle content + posting for you",
+        "Continuous traffic flow (scaled reach)",
+        "Full funnel optimization (click → payment)",
+        "Tailored growth strategy",
+        "Ongoing performance improvement",
+        "Full brand and offer overhaul"
+      ],
+      promise: "Turn your business into a daily sales machine",
+      buttonText: "Build My Revenue Engine",
       highlighted: false
     }
   ];
@@ -91,7 +117,7 @@ export function Pricing() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">Pricing</h2>
-          <p className="text-white/50">Choose the plan that fits your career goals.</p>
+          <p className="text-white/50">Choose the plan that fits your business goals.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           {plans.map((plan, i) => (
@@ -108,8 +134,17 @@ export function Pricing() {
                 <h3 className={`text-sm font-bold tracking-widest mb-4 ${plan.highlighted ? "text-gold" : "text-white/40"}`}>
                   {plan.name}
                 </h3>
-                <div className="text-4xl font-bold">{plan.price}</div>
+                <div className="flex flex-col">
+                  <div className="text-4xl font-bold">{plan.price}</div>
+                  {plan.subPrice && <div className="text-xs text-white/40 mt-1">{plan.subPrice}</div>}
+                </div>
               </div>
+              
+              <div className="mb-6 p-4 bg-white/5 rounded-2xl border border-white/5">
+                <div className="text-[10px] uppercase tracking-widest text-gold font-bold mb-1">Our Promise</div>
+                <div className="text-sm italic text-white/80">"{plan.promise}"</div>
+              </div>
+
               <div className="space-y-4 mb-10 flex-grow">
                 {plan.features.map((feature, j) => (
                   <div key={j} className="flex items-center gap-3 text-sm text-white/70">
@@ -117,14 +152,8 @@ export function Pricing() {
                     {feature}
                   </div>
                 ))}
-                {plan.notIncluded.map((feature, j) => (
-                  <div key={j} className="flex items-center gap-3 text-sm text-white/30">
-                    <X className="w-4 h-4 flex-shrink-0" />
-                    {feature}
-                  </div>
-                ))}
               </div>
-              <button className={`w-full py-4 rounded-full font-bold transition-all ${
+              <button className={`w-full py-4 px-4 rounded-full font-bold text-sm transition-all ${
                 plan.highlighted 
                 ? "bg-gold text-black hover:bg-gold-light shadow-[0_0_20px_rgba(212,175,55,0.3)]" 
                 : "bg-black text-white border border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.1),inset_0_0_12px_rgba(255,255,255,0.1)] hover:border-white hover:shadow-[0_0_25px_rgba(255,255,255,0.4),inset_0_0_15px_rgba(255,255,255,0.25)]"
@@ -269,7 +298,7 @@ export function Footer({ onNavigate }: { onNavigate: (page: "home" | "about" | "
           <button onClick={() => onNavigate("contact")} className="hover:text-gold transition-colors">Contact</button>
           <a href="#pricing" className="hover:text-gold transition-colors">Pricing</a>
         </div>
-        <div className="text-sm text-white/20">
+        <div className="text-sm text-white">
           © 2026 Career Build Studio. All rights reserved.
         </div>
       </div>

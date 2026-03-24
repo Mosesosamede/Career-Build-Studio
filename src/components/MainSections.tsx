@@ -4,7 +4,7 @@ import { LogoWithText } from "./Logo";
 
 export function Navbar({ onNavigate, currentPage }: { onNavigate: (page: "home" | "about" | "contact" | "how-it-works") => void, currentPage: "home" | "about" | "contact" | "how-it-works" }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5 hover:border-gold/30 hover:shadow-[0_0_40px_rgba(212,175,55,0.15)] transition-all duration-500 group">
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
         <div onClick={() => onNavigate("home")} className="cursor-pointer">
           <LogoWithText />
