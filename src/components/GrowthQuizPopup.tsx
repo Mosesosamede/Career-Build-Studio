@@ -146,6 +146,29 @@ export function GrowthQuizPopup({
   };
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
+  const submitData = async () => {
+    try {
+      await fetch("/api/visibility", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brand: data.brandName,
+          niche: data.industry,
+          score: data.visibility,
+          recent_customers: data.recentCustomers,
+          current_efforts: data.efforts,
+          clarity: data.conversionReality,
+          target_customers: data.desiredCustomers,
+          primary_goal: data.mainGoal,
+          bottleneck: data.stoppingFactor,
+          priority: data.urgency
+        })
+      });
+    } catch (error) {
+      console.error("Submission error:", error);
+    }
+  };
+
   const handleFinish = () => {
     if (isStepValid()) {
       setIsAnalyzing(true);
@@ -159,6 +182,7 @@ export function GrowthQuizPopup({
       const timer3 = setTimeout(() => setAnalysisStep(3), 4500);
       const timer4 = setTimeout(() => {
         setIsAnalyzing(false);
+        submitData();
         setIsShowingPricing(true);
       }, 6000);
 

@@ -77,6 +77,32 @@ async function startServer() {
     }
   });
 
+  // Visibility Form Submission Proxy
+  app.post("/api/visibility", async (req, res) => {
+    const apiUrl = process.env.VISIBILITY_API_URL;
+    
+    if (!apiUrl) {
+      console.error("VISIBILITY_API_URL is not set");
+      return res.status(500).json({ error: "API configuration missing" });
+    }
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req.body),
+        redirect: "follow",
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Visibility submission error:", error);
+      res.status(500).json({ error: "Failed to submit form" });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -92,7 +118,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, () => {
+  app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
 }

@@ -26,7 +26,7 @@ export function ContactPage() {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch("http://localhost:3000/api/contact", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         cache: "no-cache",
         headers: {
@@ -35,7 +35,7 @@ export function ContactPage() {
         body: JSON.stringify({
           fullName: formData.name,
           email: formData.email,
-          busines: formData.businessName,
+          business: formData.businessName,
           goal: formData.goal,
           state: formData.situation,
           blocker: formData.problem,
@@ -218,10 +218,12 @@ export function ContactPage() {
             </p>
           </div>
           <div className="pt-8">
-            <div className="flex items-center justify-center gap-3 text-gold font-bold">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Finalizing Analysis...
-            </div>
+            <button
+              onClick={() => window.location.href = "/"}
+              className="px-8 py-4 bg-gold text-black rounded-full font-bold hover:bg-gold-light transition-all"
+            >
+              Back to Home
+            </button>
           </div>
         </motion.div>
       </div>
