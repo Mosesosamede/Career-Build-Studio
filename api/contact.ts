@@ -20,6 +20,12 @@ export default async function handler(req, res) {
       redirect: "follow",
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("External API Error:", errorText);
+      return res.status(response.status).json({ error: "External API failed", details: errorText });
+    }
+
     res.status(200).json({ success: true });
   } catch (error) {
     console.error("Contact submission error:", error);
