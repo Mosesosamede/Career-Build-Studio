@@ -148,8 +148,16 @@ export function GrowthQuizPopup({
 
   const submitData = async () => {
     try {
-      await fetch("/api/visibility", {
+      const apiUrl = import.meta.env.VITE_VISIBILITY_API_URL;
+      
+      if (!apiUrl) {
+        console.error("VITE_VISIBILITY_API_URL is not set");
+        return;
+      }
+
+      await fetch(apiUrl, {
         method: "POST",
+        mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           brand: data.brandName,

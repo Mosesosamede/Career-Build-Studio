@@ -26,9 +26,16 @@ export function ContactPage() {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch("/api/contact", {
+      const apiUrl = import.meta.env.VITE_GET_CUSTOMER_API_URL;
+      
+      if (!apiUrl) {
+        console.error("VITE_GET_CUSTOMER_API_URL is not set");
+        throw new Error("API configuration missing");
+      }
+
+      const response = await fetch(apiUrl, {
         method: "POST",
-        cache: "no-cache",
+        mode: "no-cors", // Google Apps Script often requires no-cors for direct browser POSTs
         headers: {
           "Content-Type": "application/json",
         },
@@ -43,10 +50,7 @@ export function ContactPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit");
-      }
-
+      // With mode: 'no-cors', we can't read the response, so we assume success if no error is thrown
       setIsSubmitting(false);
       setIsSubmitted(true);
     } catch (error) {
