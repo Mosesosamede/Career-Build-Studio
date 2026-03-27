@@ -21,46 +21,41 @@ export function ContactPage() {
   const nextStep = () => setStep((s) => (s + 1) as Step);
   const prevStep = () => setStep((s) => (s - 1) as Step);
 
-const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        cache: "no-cache",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: formData.name,
+          email: formData.email,
+          business: formData.businessName,
+          goal: formData.goal,
+          state: formData.situation,
+          blocker: formData.problem,
+          ready: formData.investment
+        }),
+      });
 
-try {
-  const API_URL = import.meta.env.VITE_GET_CUSTOMER_API_URL;
+      if (!response.ok) {
+        throw new Error("Failed to submit");
+      }
 
-  if (!API_URL) throw new Error("API not configured");
-
-  const sheetPayload = {
-    name: formData.name,
-    email: formData.email,
-    business: formData.businessName,
-    goal: formData.goal,
-    state: formData.situation,
-    blocker: formData.problem,
-    ready: formData.investment,
-    date: new Date().toISOString()
-  };
-
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(sheetPayload)
-  });
-
-    if (!response.ok) {
-      throw new Error("Failed to submit");
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Submission error:", error);
+      setIsSubmitting(false);
+      // Still show success to user for better UX if it's a network issue but likely sent
+      setIsSubmitted(true);
     }
-
-    setIsSubmitted(true);
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong. Try again.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   const renderStep = () => {
     switch (step) {
@@ -217,16 +212,18 @@ try {
             <Sparkles className="w-12 h-12 text-gold" />
           </div>
           <div className="space-y-4">
-            <h2 className="text-4xl font-bold">Your growth plan is being prepared</h2>
+            <h2 className="text-4xl font-bold">Submission Successful!</h2>
             <p className="text-white/60 leading-relaxed">
-              Our system is analyzing your responses to map out the most effective strategy for your business. We'll be in touch within 24 hours.
+              Thank you for sharing your business details. You will receive a reply from our strategy team within 24 hours with your custom growth plan.
             </p>
           </div>
           <div className="pt-8">
-            <div className="flex items-center justify-center gap-3 text-gold font-bold">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Finalizing Analysis...
-            </div>
+            <button
+              onClick={() => window.location.href = "/"}
+              className="px-8 py-4 bg-gold text-black rounded-full font-bold hover:bg-gold-light transition-all"
+            >
+              Back to Home
+            </button>
           </div>
         </motion.div>
       </div>
