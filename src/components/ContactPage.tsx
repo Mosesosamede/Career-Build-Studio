@@ -25,28 +25,29 @@ const handleSubmit = async (e: FormEvent) => {
   e.preventDefault();
   setIsSubmitting(true);
 
-  try {
-    const sheetPayload = {
-      name: formData.name,
-      email: formData.email,
-      businessName: formData.businessName,
-      goal: formData.goal,
-      state: formData.situation,
-      problem: formData.problem,
-      investment: formData.investment,
-      date: new Date().toISOString()
-    };
+try {
+  const API_URL = import.meta.env.VITE_GET_CUSTOMER_API_URL;
 
-    const response = await fetch(
-      "https://api.sheetbest.com/sheets/d7786607-5f49-4cea-baaf-246d02c14bf2",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(sheetPayload)
-      }
-    );
+  if (!API_URL) throw new Error("API not configured");
+
+  const sheetPayload = {
+    name: formData.name,
+    email: formData.email,
+    business: formData.businessName,
+    goal: formData.goal,
+    state: formData.situation,
+    blocker: formData.problem,
+    ready: formData.investment,
+    date: new Date().toISOString()
+  };
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(sheetPayload)
+  });
 
     if (!response.ok) {
       throw new Error("Failed to submit");
