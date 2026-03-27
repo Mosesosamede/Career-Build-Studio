@@ -21,14 +21,45 @@ export function ContactPage() {
   const nextStep = () => setStep((s) => (s + 1) as Step);
   const prevStep = () => setStep((s) => (s - 1) as Step);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    // Simulate processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
+const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
+    const sheetPayload = {
+      name: formData.name,
+      email: formData.email,
+      businessName: formData.businessName,
+      goal: formData.goal,
+      state: formData.situation,
+      problem: formData.problem,
+      investment: formData.investment,
+      date: new Date().toISOString()
+    };
+
+    const response = await fetch(
+      "https://api.sheetbest.com/sheets/d7786607-5f49-4cea-baaf-246d02c14bf2",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(sheetPayload)
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to submit");
+    }
+
     setIsSubmitted(true);
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong. Try again.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const renderStep = () => {
     switch (step) {
