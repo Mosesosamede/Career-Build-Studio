@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
-import { X, ChevronRight, ChevronLeft, Sparkles, Check, Loader2, CreditCard, ShieldCheck, Zap, CheckCircle2 } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Sparkles, Check, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import PaymentButton from "./PaymentButton";
 
 interface QuizData {
   brandName: string;
@@ -16,93 +15,10 @@ interface QuizData {
   urgency: string;
 }
 
-const PLANS = [
-  {
-    id: "starter",
-    name: "Starter — Launch (Pay-As-You-Go)",
-    price: 25000,
-    priceDisplay: "₦25,000",
-    subPrice: "5 payments of ₦5,000",
-    description: "Turn your product into something people notice and buy",
-    features: [
-      "3 product videos to attract attention",
-      "Make your product look premium",
-      "Get discovered on Google",
-      "Simple checkout for fast purchases",
-      "Guided content plan for posting",
-      "Generate your first 20 potential customers",
-      "Tailored Strategy"
-    ],
-    icon: Zap,
-    color: "text-blue-400"
-  },
-  {
-    id: "growth",
-    name: "Growth — Customer Flow ⭐",
-    price: 120000,
-    priceDisplay: "₦120,000",
-    description: "Get consistent traffic and convert it into paying customers",
-    features: [
-      "Everything in Starter",
-      "10 videos/daily showcasing your product",
-      "Turn visitors into paying customers",
-      "Up to 1,000 targeted daily reach",
-      "Optimized checkout for instant purchases",
-      "Product repositioning that attracts buyers",
-      "Offer structured to convert attention",
-      "Get discovered on Google",
-      "Tailored Strategy"
-    ],
-    icon: Sparkles,
-    color: "text-gold",
-    popular: true
-  },
-  {
-    id: "full-scale",
-    name: "Full Scale — Revenue Engine",
-    price: 350000,
-    priceDisplay: "₦350,000",
-    description: "Turn your business into a daily sales machine",
-    features: [
-      "Everything in Growth",
-      "AI-powered creators showcasing daily",
-      "We handle content + posting for you",
-      "Continuous traffic flow (scaled reach)",
-      "Full funnel optimization (click → payment)",
-      "Tailored growth strategy",
-      "Ongoing performance improvement",
-      "Full brand and offer overhaul",
-      "Tailored Strategy"
-    ],
-    icon: ShieldCheck,
-    color: "text-purple-400"
-  }
-];
-
-export function GrowthQuizPopup({ 
-  isOpen, 
-  onClose,
-  title = "Growth Audit",
-  description = "Section",
-  resultTitle = "Your Custom Growth Plan",
-  resultDescription = "Based on your audit, we recommend these solutions."
-}: { 
-  isOpen: boolean; 
-  onClose: () => void;
-  title?: string;
-  description?: string;
-  resultTitle?: string;
-  resultDescription?: string;
-}) {
+export function GrowthQuizPopup({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [step, setStep] = useState(1);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(0);
-  const [isShowingPricing, setIsShowingPricing] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<typeof PLANS[0] | null>(null);
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [starterOption, setStarterOption] = useState<"pay-as-you-go" | "full" | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<"idle" | "verifying" | "success" | "error">("idle");
   const [data, setData] = useState<QuizData>({
     brandName: "",
     industry: "",
@@ -146,37 +62,6 @@ export function GrowthQuizPopup({
   };
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
-  const submitData = async () => {
-    try {
-      const apiUrl = import.meta.env.VITE_VISIBILITY_API_URL;
-      
-      if (!apiUrl) {
-        console.error("VITE_VISIBILITY_API_URL is not set");
-        return;
-      }
-
-      await fetch(apiUrl, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          brand: data.brandName,
-          niche: data.industry,
-          score: data.visibility,
-          recent_customers: data.recentCustomers,
-          current_efforts: data.efforts,
-          clarity: data.conversionReality,
-          target_customers: data.desiredCustomers,
-          primary_goal: data.mainGoal,
-          bottleneck: data.stoppingFactor,
-          priority: data.urgency
-        })
-      });
-    } catch (error) {
-      console.error("Submission error:", error);
-    }
-  };
-
   const handleFinish = () => {
     if (isStepValid()) {
       setIsAnalyzing(true);
@@ -189,9 +74,19 @@ export function GrowthQuizPopup({
       const timer2 = setTimeout(() => setAnalysisStep(2), 3000);
       const timer3 = setTimeout(() => setAnalysisStep(3), 4500);
       const timer4 = setTimeout(() => {
-        setIsAnalyzing(false);
-        submitData();
-        setIsShowingPricing(true);
+        onClose();
+        // Reset state for next time
+        setTimeout(() => {
+          setIsAnalyzing(false);
+          setAnalysisStep(0);
+          setStep(1);
+        }, 500);
+        
+        // Scroll to pricing
+        const pricingSection = document.getElementById('pricing');
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ behavior: 'smooth' });
+        }
       }, 6000);
 
       return () => {
@@ -201,57 +96,7 @@ export function GrowthQuizPopup({
         clearTimeout(timer4);
       };
     }
-  }, [isAnalyzing]);
-
-  const getFinalPrice = () => {
-    if (selectedPlan?.id === "starter") {
-      return starterOption === "pay-as-you-go" ? 5000 : 25000;
-    }
-    return selectedPlan?.price || 0;
-  };
-
-  const getFinalPriceDisplay = () => {
-    if (selectedPlan?.id === "starter") {
-      return starterOption === "pay-as-you-go" ? "₦5,000" : "₦25,000";
-    }
-    return selectedPlan?.priceDisplay || "";
-  };
-
-  const handlePaymentSuccess = async (transactionId: number, txRef: string) => {
-    setPaymentStatus("verifying");
-    
-    try {
-      const res = await fetch('/api/payment/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          transactionId,
-          expectedAmount: getFinalPrice(),
-          expectedCurrency: "NGN"
-        }),
-      });
-
-      const result = await res.json();
-
-      if (result.verified) {
-        setPaymentStatus("success");
-        setTimeout(() => {
-          onClose();
-          // Reset state
-          setIsShowingPricing(false);
-          setIsCheckingOut(false);
-          setSelectedPlan(null);
-          setStep(1);
-          setPaymentStatus("idle");
-        }, 3000);
-      } else {
-        setPaymentStatus("error");
-      }
-    } catch (error) {
-      console.error("Verification error:", error);
-      setPaymentStatus("error");
-    }
-  };
+  }, [isAnalyzing, onClose]);
 
   if (!isOpen) return null;
 
@@ -278,10 +123,10 @@ export function GrowthQuizPopup({
               <div>
                 <div className="flex items-center gap-2 text-gold text-xs font-bold tracking-widest uppercase mb-1">
                   <Sparkles className="w-3 h-3" />
-                  {title}
+                  Growth Audit
                 </div>
                 <div className="text-white/40 text-[10px] uppercase tracking-tighter">
-                  {description} {step} of {totalSteps}
+                  Section {step} of {totalSteps}
                 </div>
               </div>
               <button 
@@ -325,9 +170,9 @@ export function GrowthQuizPopup({
 
                       {/* Steps */}
                       {[
-                        "Analyzing visibility gaps",
-                        "Mapping growth opportunities",
-                        "Generating custom strategy"
+                        "Choose packages",
+                        "Payment verified",
+                        "Dashboard monitor"
                       ].map((text, index) => (
                         <div key={index} className="flex items-center gap-6 relative z-10">
                           <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
@@ -360,227 +205,6 @@ export function GrowthQuizPopup({
                     >
                       Finalizing your growth strategy...
                     </motion.p>
-                  </motion.div>
-                ) : isShowingPricing ? (
-                  <motion.div
-                    key="pricing"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-8"
-                  >
-                    {!isCheckingOut ? (
-                      <>
-                        <div className="text-center space-y-2">
-                          <h3 className="text-3xl font-bold text-white">{resultTitle}</h3>
-                          <p className="text-white/40">{resultDescription}</p>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-6">
-                          {PLANS.map((plan) => (
-                            <motion.div
-                              key={plan.id}
-                              whileHover={{ y: -5 }}
-                              className={`relative p-8 rounded-3xl border transition-all cursor-pointer flex flex-col ${
-                                plan.popular 
-                                ? "bg-gold/5 border-gold shadow-[0_0_30px_rgba(212,175,55,0.1)]" 
-                                : "bg-white/5 border-white/10 hover:border-white/20"
-                              }`}
-                              onClick={() => {
-                                setSelectedPlan(plan);
-                                if (plan.id === "starter") {
-                                  setStarterOption(null);
-                                }
-                                setIsCheckingOut(true);
-                              }}
-                            >
-                              {plan.popular && (
-                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-                                  Most Popular
-                                </div>
-                              )}
-                              <div className="flex justify-between items-start mb-6">
-                                <div className={`p-3 rounded-2xl bg-white/5 ${plan.color}`}>
-                                  <plan.icon className="w-6 h-6" />
-                                </div>
-                                <div className="text-right">
-                                  <div className="text-2xl font-bold text-white">{plan.priceDisplay}</div>
-                                  {plan.subPrice && <div className="text-[10px] text-white/40 mt-1">{plan.subPrice}</div>}
-                                </div>
-                              </div>
-                              <h4 className="text-xl font-bold text-white mb-2">{plan.name}</h4>
-                              <p className="text-sm text-white/60 mb-6 flex-grow">{plan.description}</p>
-                              <ul className="space-y-3 mb-8">
-                                {plan.features.map((feature, i) => (
-                                  <li key={i} className="flex items-center gap-3 text-xs text-white/80">
-                                    <Check className="w-4 h-4 text-gold shrink-0" />
-                                    {feature}
-                                  </li>
-                                ))}
-                              </ul>
-                              <button className={`w-full py-4 rounded-full font-bold transition-all ${
-                                plan.popular 
-                                ? "bg-gold text-black hover:bg-gold-light" 
-                                : "bg-white text-black hover:bg-white/90"
-                              }`}>
-                                Select Plan
-                              </button>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </>
-                    ) : selectedPlan?.id === "starter" && !starterOption ? (
-                      <div className="space-y-8">
-                        <button 
-                          onClick={() => setIsCheckingOut(false)}
-                          className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm font-bold"
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                          Back to plans
-                        </button>
-                        <div className="text-center space-y-2">
-                          <h3 className="text-3xl font-bold text-white">Select Starter Option</h3>
-                          <p className="text-white/40">Choose how you want to pay for the Starter plan.</p>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-6">
-                          <div 
-                            onClick={() => setStarterOption("pay-as-you-go")}
-                            className="p-8 rounded-3xl border border-white/10 bg-white/5 hover:border-gold cursor-pointer transition-all group"
-                          >
-                            <h4 className="text-xl font-bold text-white mb-2 group-hover:text-gold transition-colors">Pay-As-You-Go</h4>
-                            <div className="text-2xl font-bold text-gold mb-4">₦5,000</div>
-                            <p className="text-sm text-white/60">Launch your first viral hit today. Low entry, high impact growth.</p>
-                          </div>
-                          <div 
-                            onClick={() => setStarterOption("full")}
-                            className="p-8 rounded-3xl border border-white/10 bg-white/5 hover:border-gold cursor-pointer transition-all group"
-                          >
-                            <h4 className="text-xl font-bold text-white mb-2 group-hover:text-gold transition-colors">Full Payment</h4>
-                            <div className="text-2xl font-bold text-gold mb-4">₦25,000</div>
-                            <p className="text-sm text-white/60">Unlock the full engine. Get all 3 high-converting videos at once and save.</p>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-8">
-                        <button 
-                          onClick={() => {
-                            if (selectedPlan?.id === "starter") {
-                              setStarterOption(null);
-                            } else {
-                              setIsCheckingOut(false);
-                            }
-                          }}
-                          className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm font-bold"
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                          Back
-                        </button>
-
-                        <div className="grid md:grid-cols-2 gap-12">
-                          <div className="space-y-6">
-                            <div className="p-6 rounded-3xl bg-white/5 border border-white/10 space-y-4">
-                              <div className="flex justify-between items-center">
-                                <h4 className="font-bold text-white">Order Summary</h4>
-                                <span className="text-gold font-bold">{getFinalPriceDisplay()}</span>
-                              </div>
-                              <div className="h-px bg-white/10 w-full" />
-                              <div className="space-y-2">
-                                <div className="text-sm text-white/60">{selectedPlan?.name} {selectedPlan?.id === 'starter' && `(${starterOption === 'pay-as-you-go' ? 'Pay-As-You-Go' : 'Full'})`}</div>
-                                <div className="text-xs text-white/40">Beneficiary: Dev ninja Web</div>
-                              </div>
-                            </div>
-
-                            <div className="space-y-4">
-                              <div className="space-y-2">
-                                <label className="text-xs text-white/40 uppercase tracking-widest font-bold">Your Email Address</label>
-                                <input 
-                                  type="email"
-                                  value={customerEmail}
-                                  onChange={(e) => setCustomerEmail(e.target.value)}
-                                  placeholder="name@example.com"
-                                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-gold transition-all"
-                                  required
-                                />
-                              </div>
-                              <div className="flex items-center gap-3 text-white/60 text-sm">
-                                <ShieldCheck className="w-5 h-5 text-gold" />
-                                Secure Checkout via Flutterwave
-                              </div>
-                              <div className="flex items-center gap-3 text-white/60 text-sm">
-                                <CheckCircle2 className="w-5 h-5 text-gold" />
-                                Cancel anytime
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="space-y-6">
-                            {paymentStatus === "idle" ? (
-                              <>
-                                <div className="space-y-4">
-                                  <h4 className="text-xl font-bold text-white">Complete your order</h4>
-                                  <p className="text-sm text-white/40">You're one step away from your growth strategy.</p>
-                                </div>
-                                <PaymentButton
-                                  amount={getFinalPrice()}
-                                  currency="NGN"
-                                  txRef={`cb-${Date.now()}`}
-                                  customer={{
-                                    email: customerEmail,
-                                    name: data.brandName,
-                                    phone_number: "08000000000"
-                                  }}
-                                  onSuccess={handlePaymentSuccess}
-                                  onClose={() => console.log("Payment closed")}
-                                  className={`w-full py-5 rounded-full font-bold text-lg transition-all transform flex items-center justify-center gap-3 ${
-                                    !customerEmail || !customerEmail.includes('@')
-                                    ? "bg-white/10 text-white/20 cursor-not-allowed"
-                                    : "bg-gold text-black hover:bg-gold-light hover:scale-[1.02] shadow-[0_0_30px_rgba(212,175,55,0.3)]"
-                                  }`}
-                                  disabled={!customerEmail || !customerEmail.includes('@')}
-                                >
-                                  <CreditCard className="w-5 h-5" />
-                                  Pay Now
-                                </PaymentButton>
-                              </>
-                            ) : paymentStatus === "verifying" ? (
-                              <div className="py-12 flex flex-col items-center justify-center space-y-6">
-                                <Loader2 className="w-12 h-12 text-gold animate-spin" />
-                                <div className="text-center">
-                                  <h4 className="text-xl font-bold text-white">Verifying Payment</h4>
-                                  <p className="text-sm text-white/40">Please do not close this window.</p>
-                                </div>
-                              </div>
-                            ) : paymentStatus === "success" ? (
-                              <div className="py-12 flex flex-col items-center justify-center space-y-6 text-center">
-                                <div className="w-20 h-20 rounded-full bg-gold flex items-center justify-center">
-                                  <Check className="w-10 h-10 text-black" />
-                                </div>
-                                <div className="space-y-2">
-                                  <h4 className="text-2xl font-bold text-white">Payment Successful!</h4>
-                                  <p className="text-sm text-white/40">Welcome to Career Build Studio. Redirecting you to your dashboard...</p>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="py-12 flex flex-col items-center justify-center space-y-6 text-center">
-                                <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center">
-                                  <X className="w-10 h-10 text-red-500" />
-                                </div>
-                                <div className="space-y-2">
-                                  <h4 className="text-2xl font-bold text-white">Verification Failed</h4>
-                                  <p className="text-sm text-white/40">We couldn't verify your payment. Please contact support with your transaction ID.</p>
-                                  <button 
-                                    onClick={() => setPaymentStatus("idle")}
-                                    className="mt-4 text-gold hover:text-gold-light text-sm font-bold underline"
-                                  >
-                                    Try again
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </motion.div>
                 ) : (
                   <motion.div
@@ -844,7 +468,7 @@ export function GrowthQuizPopup({
             </div>
 
             {/* Footer */}
-            {!isAnalyzing && !isShowingPricing && (
+            {!isAnalyzing && (
               <div className="p-8 border-t border-white/5 bg-zinc-900/50 flex justify-between items-center">
                 <button
                   onClick={prevStep}
