@@ -50,10 +50,10 @@ async function startServer() {
 
   // Contact Form Submission Proxy
   app.post("/api/contact", async (req, res) => {
-    const apiUrl = process.env.GET_CUSTOMER_API_URL;
+    const apiUrl = process.env.VITE_CONTACT_API_URL;
     
     if (!apiUrl) {
-      console.error("GET_CUSTOMER_API_URL is not set");
+      console.error("VITE_CONTACT_API_URL is not set");
       return res.status(500).json({ error: "API configuration missing" });
     }
 
