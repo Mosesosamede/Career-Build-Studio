@@ -67,10 +67,15 @@ async function startServer() {
         redirect: "follow", // Ensure we follow redirects for Google Apps Script
       });
 
-      // Google Apps Script returns a redirect or a simple JSON
-      // If it's a redirect, fetch handles it automatically.
-      // We just need to know if it was sent successfully.
-      res.json({ success: true });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("External API Error:", errorText);
+        return res
+          .status(response.status)
+          .json({ error: "External API failed", details: errorText });
+      }
+
+      res.status(200).json({ success: true });
     } catch (error) {
       console.error("Contact submission error:", error);
       res.status(500).json({ error: "Failed to submit form" });
@@ -96,7 +101,15 @@ async function startServer() {
         redirect: "follow",
       });
 
-      res.json({ success: true });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("External API Error:", errorText);
+        return res
+          .status(response.status)
+          .json({ error: "External API failed", details: errorText });
+      }
+
+      res.status(200).json({ success: true });
     } catch (error) {
       console.error("Visibility submission error:", error);
       res.status(500).json({ error: "Failed to submit form" });

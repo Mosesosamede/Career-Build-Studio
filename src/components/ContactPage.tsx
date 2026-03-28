@@ -8,6 +8,7 @@ export function ContactPage() {
   const [step, setStep] = useState<Step>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,11 +25,11 @@ export function ContactPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
     
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbymCZ7pki-cuYRSDNh9QnOj2eXcq-be7-HI8U8R-45m4KD-Km7dYZXt-8Rl0WOrLFG1/exec", {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        cache: "no-cache",
         headers: {
           "Content-Type": "application/json",
         },
@@ -44,16 +45,17 @@ export function ContactPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to submit");
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to submit");
       }
 
       setIsSubmitting(false);
       setIsSubmitted(true);
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Submission failed";
+      setSubmitError(message);
       console.error("Submission error:", error);
       setIsSubmitting(false);
-      // Still show success to user for better UX if it's a network issue but likely sent
-      setIsSubmitted(true);
     }
   };
 
@@ -182,6 +184,9 @@ export function ContactPage() {
               </div>
             </div>
             <div className="flex flex-col gap-4">
+            {submitError && (
+              <div className="text-red-400 text-sm font-medium">{submitError}</div>
+            )}
               <button
                 onClick={handleSubmit}
                 className="w-full bg-gold text-black py-6 rounded-full font-bold text-xl shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:bg-gold-light transition-all transform hover:scale-[1.02]"
