@@ -28,7 +28,7 @@ export function ContactPage() {
     setSubmitError(null);
     
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbymCZ7pki-cuYRSDNh9QnOj2eXcq-be7-HI8U8R-45m4KD-Km7dYZXt-8Rl0WOrLFG1/exec", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
