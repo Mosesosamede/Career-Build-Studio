@@ -50,12 +50,9 @@ async function startServer() {
 
   // Contact Form Submission Proxy
   app.post("/api/contact", async (req, res) => {
-    const apiUrl = process.env.GET_CUSTOMER_API_URL;
-    
-    if (!apiUrl) {
-      console.error("GET_CUSTOMER_API_URL is not set");
-      return res.status(500).json({ error: "API configuration missing" });
-    }
+    const apiUrl =
+      process.env.GET_CUSTOMER_API_URL ||
+      "https://script.google.com/macros/s/AKfycbymCZ7pki-cuYRSDNh9QnOj2eXcq-be7-HI8U8R-45m4KD-Km7dYZXt-8Rl0WOrLFG1/exec";
 
     try {
       const response = await fetch(apiUrl, {
@@ -64,7 +61,7 @@ async function startServer() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(req.body),
-        redirect: "follow", // Ensure we follow redirects for Google Apps Script
+        redirect: "follow",
       });
 
       if (!response.ok) {
